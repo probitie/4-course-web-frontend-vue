@@ -1,7 +1,9 @@
 # smartphone-store
 
+
 ## Project setup
 ```
+install node-js and npm
 npm install
 ```
 
