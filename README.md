@@ -36,3 +36,5 @@ protoc -I=proto/ product.proto \
   --js_out=import_style=commonjs:./src/grpc/ \
   --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./src/grpc/
 ```
+
+if you get error about protic-gen-js - add ./node-modules/protoc-gen-js/bin to path or itnstall it globally
