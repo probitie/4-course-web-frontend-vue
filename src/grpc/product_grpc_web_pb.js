@@ -1,5 +1,5 @@
 /**
- * @fileoverview gRPC-Web generated client stub for frontend
+ * @fileoverview gRPC-Web generated client stub for net.devh.boot.grpc.example
  * @enhanceable
  * @public
  */
@@ -19,10 +19,12 @@
 const grpc = {};
 grpc.web = require('grpc-web');
 
-
-var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js')
 const proto = {};
-proto.frontend = require('./product_pb.js');
+proto.net = {};
+proto.net.devh = {};
+proto.net.devh.boot = {};
+proto.net.devh.boot.grpc = {};
+proto.net.devh.boot.grpc.example = require('./product_pb.js');
 
 /**
  * @param {string} hostname
@@ -32,7 +34,7 @@ proto.frontend = require('./product_pb.js');
  * @struct
  * @final
  */
-proto.frontend.ProductServiceClient =
+proto.net.devh.boot.grpc.example.ProductServiceClient =
     function(hostname, credentials, options) {
   if (!options) options = {};
   options.format = 'text';
@@ -58,7 +60,7 @@ proto.frontend.ProductServiceClient =
  * @struct
  * @final
  */
-proto.frontend.ProductServicePromiseClient =
+proto.net.devh.boot.grpc.example.ProductServicePromiseClient =
     function(hostname, credentials, options) {
   if (!options) options = {};
   options.format = 'text';
@@ -79,100 +81,222 @@ proto.frontend.ProductServicePromiseClient =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.google.protobuf.Empty,
- *   !proto.frontend.ProductList>}
+ *   !proto.net.devh.boot.grpc.example.GetProductRequest,
+ *   !proto.net.devh.boot.grpc.example.ProductResponse>}
  */
-const methodDescriptor_ProductService_GetProducts = new grpc.web.MethodDescriptor(
-  '/frontend.ProductService/GetProducts',
+const methodDescriptor_ProductService_GetProduct = new grpc.web.MethodDescriptor(
+  '/net.devh.boot.grpc.example.ProductService/GetProduct',
   grpc.web.MethodType.UNARY,
-  google_protobuf_empty_pb.Empty,
-  proto.frontend.ProductList,
+  proto.net.devh.boot.grpc.example.GetProductRequest,
+  proto.net.devh.boot.grpc.example.ProductResponse,
   /**
-   * @param {!proto.google.protobuf.Empty} request
+   * @param {!proto.net.devh.boot.grpc.example.GetProductRequest} request
    * @return {!Uint8Array}
    */
   function(request) {
     return request.serializeBinary();
   },
-  proto.frontend.ProductList.deserializeBinary
+  proto.net.devh.boot.grpc.example.ProductResponse.deserializeBinary
 );
 
 
 /**
- * @param {!proto.google.protobuf.Empty} request The
+ * @param {!proto.net.devh.boot.grpc.example.GetProductRequest} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.frontend.ProductList)}
+ * @param {function(?grpc.web.RpcError, ?proto.net.devh.boot.grpc.example.ProductResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.frontend.ProductList>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.net.devh.boot.grpc.example.ProductResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.frontend.ProductServiceClient.prototype.getProducts =
+proto.net.devh.boot.grpc.example.ProductServiceClient.prototype.getProduct =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/frontend.ProductService/GetProducts',
+      '/net.devh.boot.grpc.example.ProductService/GetProduct',
       request,
       metadata || {},
-      methodDescriptor_ProductService_GetProducts,
+      methodDescriptor_ProductService_GetProduct,
       callback);
 };
 
 
 /**
- * @param {!proto.google.protobuf.Empty} request The
+ * @param {!proto.net.devh.boot.grpc.example.GetProductRequest} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.frontend.ProductList>}
+ * @return {!Promise<!proto.net.devh.boot.grpc.example.ProductResponse>}
  *     Promise that resolves to the response
  */
-proto.frontend.ProductServicePromiseClient.prototype.getProducts =
+proto.net.devh.boot.grpc.example.ProductServicePromiseClient.prototype.getProduct =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/frontend.ProductService/GetProducts',
+      '/net.devh.boot.grpc.example.ProductService/GetProduct',
       request,
       metadata || {},
-      methodDescriptor_ProductService_GetProducts);
+      methodDescriptor_ProductService_GetProduct);
 };
 
 
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.frontend.ProductId,
- *   !proto.google.protobuf.Empty>}
+ *   !proto.net.devh.boot.grpc.example.AddProductRequest,
+ *   !proto.net.devh.boot.grpc.example.ProductResponse>}
  */
-const methodDescriptor_ProductService_DeleteProduct = new grpc.web.MethodDescriptor(
-  '/frontend.ProductService/DeleteProduct',
+const methodDescriptor_ProductService_AddProduct = new grpc.web.MethodDescriptor(
+  '/net.devh.boot.grpc.example.ProductService/AddProduct',
   grpc.web.MethodType.UNARY,
-  proto.frontend.ProductId,
-  google_protobuf_empty_pb.Empty,
+  proto.net.devh.boot.grpc.example.AddProductRequest,
+  proto.net.devh.boot.grpc.example.ProductResponse,
   /**
-   * @param {!proto.frontend.ProductId} request
+   * @param {!proto.net.devh.boot.grpc.example.AddProductRequest} request
    * @return {!Uint8Array}
    */
   function(request) {
     return request.serializeBinary();
   },
-  google_protobuf_empty_pb.Empty.deserializeBinary
+  proto.net.devh.boot.grpc.example.ProductResponse.deserializeBinary
 );
 
 
 /**
- * @param {!proto.frontend.ProductId} request The
+ * @param {!proto.net.devh.boot.grpc.example.AddProductRequest} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.google.protobuf.Empty)}
+ * @param {function(?grpc.web.RpcError, ?proto.net.devh.boot.grpc.example.ProductResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.google.protobuf.Empty>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.net.devh.boot.grpc.example.ProductResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.frontend.ProductServiceClient.prototype.deleteProduct =
+proto.net.devh.boot.grpc.example.ProductServiceClient.prototype.addProduct =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/frontend.ProductService/DeleteProduct',
+      '/net.devh.boot.grpc.example.ProductService/AddProduct',
+      request,
+      metadata || {},
+      methodDescriptor_ProductService_AddProduct,
+      callback);
+};
+
+
+/**
+ * @param {!proto.net.devh.boot.grpc.example.AddProductRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.net.devh.boot.grpc.example.ProductResponse>}
+ *     Promise that resolves to the response
+ */
+proto.net.devh.boot.grpc.example.ProductServicePromiseClient.prototype.addProduct =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/net.devh.boot.grpc.example.ProductService/AddProduct',
+      request,
+      metadata || {},
+      methodDescriptor_ProductService_AddProduct);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.net.devh.boot.grpc.example.UpdateProductRequest,
+ *   !proto.net.devh.boot.grpc.example.ProductResponse>}
+ */
+const methodDescriptor_ProductService_UpdateProduct = new grpc.web.MethodDescriptor(
+  '/net.devh.boot.grpc.example.ProductService/UpdateProduct',
+  grpc.web.MethodType.UNARY,
+  proto.net.devh.boot.grpc.example.UpdateProductRequest,
+  proto.net.devh.boot.grpc.example.ProductResponse,
+  /**
+   * @param {!proto.net.devh.boot.grpc.example.UpdateProductRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.net.devh.boot.grpc.example.ProductResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.net.devh.boot.grpc.example.UpdateProductRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.net.devh.boot.grpc.example.ProductResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.net.devh.boot.grpc.example.ProductResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.net.devh.boot.grpc.example.ProductServiceClient.prototype.updateProduct =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/net.devh.boot.grpc.example.ProductService/UpdateProduct',
+      request,
+      metadata || {},
+      methodDescriptor_ProductService_UpdateProduct,
+      callback);
+};
+
+
+/**
+ * @param {!proto.net.devh.boot.grpc.example.UpdateProductRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.net.devh.boot.grpc.example.ProductResponse>}
+ *     Promise that resolves to the response
+ */
+proto.net.devh.boot.grpc.example.ProductServicePromiseClient.prototype.updateProduct =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/net.devh.boot.grpc.example.ProductService/UpdateProduct',
+      request,
+      metadata || {},
+      methodDescriptor_ProductService_UpdateProduct);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.net.devh.boot.grpc.example.DeleteProductRequest,
+ *   !proto.net.devh.boot.grpc.example.BooleanResponse>}
+ */
+const methodDescriptor_ProductService_DeleteProduct = new grpc.web.MethodDescriptor(
+  '/net.devh.boot.grpc.example.ProductService/DeleteProduct',
+  grpc.web.MethodType.UNARY,
+  proto.net.devh.boot.grpc.example.DeleteProductRequest,
+  proto.net.devh.boot.grpc.example.BooleanResponse,
+  /**
+   * @param {!proto.net.devh.boot.grpc.example.DeleteProductRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.net.devh.boot.grpc.example.BooleanResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.net.devh.boot.grpc.example.DeleteProductRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.net.devh.boot.grpc.example.BooleanResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.net.devh.boot.grpc.example.BooleanResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.net.devh.boot.grpc.example.ProductServiceClient.prototype.deleteProduct =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/net.devh.boot.grpc.example.ProductService/DeleteProduct',
       request,
       metadata || {},
       methodDescriptor_ProductService_DeleteProduct,
@@ -181,83 +305,22 @@ proto.frontend.ProductServiceClient.prototype.deleteProduct =
 
 
 /**
- * @param {!proto.frontend.ProductId} request The
+ * @param {!proto.net.devh.boot.grpc.example.DeleteProductRequest} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.google.protobuf.Empty>}
+ * @return {!Promise<!proto.net.devh.boot.grpc.example.BooleanResponse>}
  *     Promise that resolves to the response
  */
-proto.frontend.ProductServicePromiseClient.prototype.deleteProduct =
+proto.net.devh.boot.grpc.example.ProductServicePromiseClient.prototype.deleteProduct =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/frontend.ProductService/DeleteProduct',
+      '/net.devh.boot.grpc.example.ProductService/DeleteProduct',
       request,
       metadata || {},
       methodDescriptor_ProductService_DeleteProduct);
 };
 
 
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.frontend.ReviewUpdate,
- *   !proto.google.protobuf.Empty>}
- */
-const methodDescriptor_ProductService_UpdateReview = new grpc.web.MethodDescriptor(
-  '/frontend.ProductService/UpdateReview',
-  grpc.web.MethodType.UNARY,
-  proto.frontend.ReviewUpdate,
-  google_protobuf_empty_pb.Empty,
-  /**
-   * @param {!proto.frontend.ReviewUpdate} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  google_protobuf_empty_pb.Empty.deserializeBinary
-);
-
-
-/**
- * @param {!proto.frontend.ReviewUpdate} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.google.protobuf.Empty)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.google.protobuf.Empty>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.frontend.ProductServiceClient.prototype.updateReview =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/frontend.ProductService/UpdateReview',
-      request,
-      metadata || {},
-      methodDescriptor_ProductService_UpdateReview,
-      callback);
-};
-
-
-/**
- * @param {!proto.frontend.ReviewUpdate} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.google.protobuf.Empty>}
- *     Promise that resolves to the response
- */
-proto.frontend.ProductServicePromiseClient.prototype.updateReview =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/frontend.ProductService/UpdateReview',
-      request,
-      metadata || {},
-      methodDescriptor_ProductService_UpdateReview);
-};
-
-
-module.exports = proto.frontend;
+module.exports = proto.net.devh.boot.grpc.example;
 

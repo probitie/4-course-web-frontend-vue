@@ -1,34 +1,49 @@
-syntax = "proto2";
-import "google/protobuf/empty.proto";
+syntax = "proto3";
 
-package frontend;
+package net.devh.boot.grpc.example;
 
-// Product message
+option java_multiple_files = true;
+option java_package = "com.project.ecommerce.service";
+option java_outer_classname = "ProductServiceV3";
+
 message Product {
-  optional int32 id = 1;
-  optional string name = 2;
-  optional double price = 3;
-  optional string description = 4;
+  int64 id = 1;
+  string title = 2;
+  string description = 3;
+  double price = 4;
+  string category = 5;
+  string addedOn = 6;
 }
 
-// Request messages
-message ProductId {
-  optional int32 id = 1;
+message GetProductRequest {
+  int64 id = 1;
 }
 
-message ReviewUpdate {
-  optional int32 id = 1;
-  optional int32 review = 2;
+message ProductResponse {
+  Product product = 1;
 }
 
-// Response messages
-message ProductList {
-  repeated Product products = 1;
+message AddProductRequest {
+  Product product = 1;
 }
 
-// Service
+message UpdateProductRequest {
+  int64 id = 1;
+  Product product = 2;
+}
+
+message DeleteProductRequest {
+  int64 id = 1;
+}
+
+message BooleanResponse{
+  bool resp = 1;
+}
+
 service ProductService {
-  rpc GetProducts(google.protobuf.Empty) returns (ProductList);
-  rpc DeleteProduct(ProductId) returns (google.protobuf.Empty);
-  rpc UpdateReview(ReviewUpdate) returns (google.protobuf.Empty);
+  rpc GetProduct (GetProductRequest) returns (ProductResponse);
+  rpc AddProduct (AddProductRequest) returns (ProductResponse);
+  rpc UpdateProduct (UpdateProductRequest) returns (ProductResponse);
+  rpc DeleteProduct (DeleteProductRequest) returns (BooleanResponse);
 }
+
