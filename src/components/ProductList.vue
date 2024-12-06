@@ -18,7 +18,7 @@ import { ProductServiceClient } from '@/grpc/product_grpc_web_pb';
 import { DeleteProductRequest, GetProductRequest } from '@/grpc/product_pb';
 import ProductItem from './ProductItem.vue';
 
-const client = new ProductServiceClient('http://localhost:9090');
+const client = new ProductServiceClient('http://localhost:8088');
 
 export default {
   components: { ProductItem },
