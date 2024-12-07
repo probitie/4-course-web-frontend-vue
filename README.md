@@ -43,3 +43,9 @@ protoc compile command
 ```
 protoc -I=proto/ product.proto   --js_out=import_style=commonjs:./src/grpc/   --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./src/grpc/
 ```
+
+Troubleshooting:
+when installing apollo client, it says that it requires react
+
+1) install react
+2) import @apollo/client/core instead of @apollo/client (https://github.com/apollographql/apollo-client/issues/7318#issuecomment-734422428)
