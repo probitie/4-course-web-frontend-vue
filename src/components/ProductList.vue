@@ -4,7 +4,7 @@
     <div v-else-if="error">Error loading products: {{ error.message }}</div>
     <div v-else>
       <ProductItem
-        v-for="product in data.products"
+        v-for="product in data.getAllProducts"
         :key="product.id"
         :product="product"
         @buy="handleBuy"
@@ -16,33 +16,34 @@
 
 <script>
 import { useQuery, useMutation } from '@vue/apollo-composable';
-import { GET_PRODUCTS, DELETE_PRODUCT, UPDATE_REVIEW } from '../graphql/operations';
+import { GET_ALL_PRODUCTS, DELETE_PRODUCT, UPDATE_PRODUCT } from '../graphql/operations';
 import ProductItem from './ProductItem.vue';
 
 export default {
   components: { ProductItem },
   setup() {
-// eslint-disable-next-line
-	  const { result: data, loading, error, refetch } = useQuery(GET_PRODUCTS);
+    const { result: data, loading, error, refetch } = useQuery(GET_ALL_PRODUCTS);
+
     const [deleteProduct] = useMutation(DELETE_PRODUCT, {
       update(cache, { data: { deleteProduct } }) {
-        cache.modify({
-          fields: {
-            products(existingProducts = []) {
-              return existingProducts.filter(
-                product => product.__ref !== `Product:${deleteProduct.id}`
-              );
+        if (deleteProduct) {
+          cache.modify({
+            fields: {
+              getAllProducts(existingProducts = []) {
+                return existingProducts.filter(product => product.id !== deleteProduct.id);
+              },
             },
-          },
-        });
+          });
+        }
       },
     });
 
-    const [updateReview] = useMutation(UPDATE_REVIEW);
+    const [updateProduct] = useMutation(UPDATE_PRODUCT);
 
     const handleBuy = async id => {
       try {
         await deleteProduct({ variables: { id } });
+        await refetch();
       } catch (err) {
         console.error('Error deleting product:', err);
       }
@@ -50,7 +51,8 @@ export default {
 
     const handleUpdateReview = async ({ productId, review }) => {
       try {
-        await updateReview({ variables: { id: productId, review } });
+        await updateProduct({ variables: { id: productId, review } });
+        await refetch();
       } catch (err) {
         console.error('Error updating review:', err);
       }

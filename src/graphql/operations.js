@@ -1,27 +1,27 @@
 import { gql } from '@apollo/client/core';
 
-export const GET_PRODUCTS = gql`
-  query GetProducts {
-    products {
+export const GET_ALL_PRODUCTS = gql`
+  query GetAllProducts {
+    getAllProducts {
       id
-      name
+      title
+      description
       price
-      review
+      category
+      addedOn
     }
   }
 `;
 
 export const DELETE_PRODUCT = gql`
-  mutation DeleteProduct($id: ID!) {
-    deleteProduct(id: $id) {
-      id
-    }
+  mutation DeleteProduct($id: Long!) {
+    deleteProduct(id: $id)
   }
 `;
 
-export const UPDATE_REVIEW = gql`
-  mutation UpdateReview($id: ID!, $review: Int!) {
-    updateReview(id: $id, review: $review) {
+export const UPDATE_PRODUCT = gql`
+  mutation UpdateProduct($id: Long!, $review: Int!) {
+    updateProduct(id: $id, product: { review: $review }) {
       id
       review
     }
