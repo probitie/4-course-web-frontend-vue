@@ -17,7 +17,7 @@
 <script>
 import { useQuery, useMutation } from '@vue/apollo-composable';
 import { GET_ALL_PRODUCTS, DELETE_PRODUCT, UPDATE_PRODUCT } from '../graphql/operations';
-import ProductItem from './ProductItem.vue';
+import ProductItem from './GraphqlProductItem.vue';
 
 export default {
   components: { ProductItem },
