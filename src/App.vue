@@ -9,6 +9,8 @@
         <option value="graphql">GraphQL</option>
       </select>
     </div>
+    <h2>VueChat</h2>
+    <VueChat />
     <component :is="currentProductList" />
   </div>
 </template>
@@ -17,6 +19,7 @@
 import RestProductList from './components/RestProductList.vue';
 import GrpcProductList from './components/GrpcProductList.vue';
 import GraphqlProductList from './components/GraphqlProductList.vue';
+import VueChat from './components/VueChat.vue';
 
 export default {
   data() {
@@ -36,6 +39,9 @@ export default {
       }
     },
   },
+  components: {
+    VueChat,
+  }
 };
 </script>
 
