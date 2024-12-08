@@ -22,36 +22,27 @@ import ProductItem from './ProductItem.vue';
 export default {
   components: { ProductItem },
   setup() {
+    // Query for fetching all products
     const { result: data, loading, error, refetch } = useQuery(GET_ALL_PRODUCTS);
 
-    const [deleteProduct] = useMutation(DELETE_PRODUCT, {
-      update(cache, { data: { deleteProduct } }) {
-        if (deleteProduct) {
-          cache.modify({
-            fields: {
-              getAllProducts(existingProducts = []) {
-                return existingProducts.filter(product => product.id !== deleteProduct.id);
-              },
-            },
-          });
-        }
-      },
-    });
+    // Mutations for deleting and updating products
+    const { mutate: deleteProduct } = useMutation(DELETE_PRODUCT);
+    const { mutate: updateProduct } = useMutation(UPDATE_PRODUCT);
 
-    const [updateProduct] = useMutation(UPDATE_PRODUCT);
-
-    const handleBuy = async id => {
+    // Handle product deletion
+    const handleBuy = async (id) => {
       try {
-        await deleteProduct({ variables: { id } });
+        await deleteProduct({ id });
         await refetch();
       } catch (err) {
         console.error('Error deleting product:', err);
       }
     };
 
+    // Handle review update
     const handleUpdateReview = async ({ productId, review }) => {
       try {
-        await updateProduct({ variables: { id: productId, review } });
+        await updateProduct({ id: productId, product: { review } });
         await refetch();
       } catch (err) {
         console.error('Error updating review:', err);
