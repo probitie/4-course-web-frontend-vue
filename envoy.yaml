@@ -18,20 +18,28 @@ static_resources:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           stat_prefix: ingress_http
           codec_type: AUTO
+          upgrade_configs:
+          - upgrade_type: websocket  # Enable WebSocket upgrades
           route_config:
             name: local_route
             virtual_hosts:
             - name: grpc_service
               domains: ["*"]
               routes:
-              - match: { prefix: "/" }
-                route: { cluster: grpc_backend }
+              - match: 
+                  prefix: "/chat"  # WebSocket route
+                route:
+                  cluster: websocket_backend
+              - match: 
+                  prefix: "/"  # Default route for gRPC
+                route: 
+                  cluster: grpc_backend
                 typed_per_filter_config:
                   envoy.filters.http.cors:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.CorsPolicy
                     allow_origin_string_match:
                       - prefix: "*"  # Allow all origins
-                    allow_methods: "POST, OPTIONS"  # Allow only POST and OPTIONS
+                    allow_methods: "POST, OPTIONS, GET"  # Include GET for WebSocket
                     allow_headers: "Content-Type, X-Grpc-Web, X-User-Agent, grpc-timeout"
                     expose_headers: "grpc-status, grpc-message, grpc-encoding, grpc-accept-encoding"
                     max_age: "86400"
@@ -62,4 +70,18 @@ static_resources:
               socket_address:
                 address: 127.0.0.1
                 port_value: 9090
+
+  - name: websocket_backend
+    connect_timeout: 0.25s
+    type: STATIC
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: websocket_backend
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 8080  # Replace with your WebSocket server port
 
