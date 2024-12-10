@@ -7,7 +7,7 @@
         :key="product.id"
         :product="product"
         @buy="handleBuy"
-        @update-review="handleUpdateReview"
+        @update-description="handleUpdateDescription"
       />
     </div>
   </div>
@@ -28,6 +28,7 @@ export default {
     async fetchProducts() {
       try {
         const response = await fetch('http://localhost:8080/api/v1/products');
+	console.log("XXXX resp is ", response);
         this.products = await response.json();
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -45,15 +46,19 @@ export default {
         console.error('Error deleting product:', error);
       }
     },
-    async handleUpdateReview({ productId, review }) {
+    async handleUpdateDescription({ productId, description }) {
       try {
-        await fetch(`http://localhost:8080/api/v1/products/${productId}/review`, {
+        await fetch(`http://localhost:8080/api/v1/products/${productId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ review }),
+          body: JSON.stringify({ description }),
         });
+        const updatedProduct = this.products.find(p => p.id === productId);
+        if (updatedProduct) {
+          updatedProduct.description = description;
+        }
       } catch (error) {
-        console.error('Error updating review:', error);
+        console.error('Error updating description:', error);
       }
     },
   },
@@ -62,3 +67,4 @@ export default {
   },
 };
 </script>
+
