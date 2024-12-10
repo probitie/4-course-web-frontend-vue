@@ -16,7 +16,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import client from '../apollo.js';
-import { GET_PRODUCTS, DELETE_PRODUCT, UPDATE_DESCRIPTION } from '../graphql/operations.js';
+import { GET_ALL_PRODUCTS, DELETE_PRODUCT, UPDATE_PRODUCT } from '../graphql/operations.js';
 import ProductItem from './ProductItem.vue';
 
 export default {
@@ -25,10 +25,11 @@ export default {
     const products = ref([]);
     const loading = ref(true);
 
+    // Fetch all products
     const fetchProducts = async () => {
       try {
-        const { data } = await client.query({ query: GET_PRODUCTS });
-        products.value = data.products;
+        const { data } = await client.query({ query: GET_ALL_PRODUCTS });
+        products.value = data.getAllProducts;
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -36,6 +37,7 @@ export default {
       }
     };
 
+    // Handle product deletion
     const handleBuy = async (productId) => {
       try {
         await client.mutate({
@@ -48,11 +50,15 @@ export default {
       }
     };
 
+    // Handle description update
     const handleUpdateDescription = async ({ productId, description }) => {
       try {
         const { data } = await client.mutate({
-          mutation: UPDATE_DESCRIPTION,
-          variables: { id: productId, description },
+          mutation: UPDATE_PRODUCT,
+          variables: {
+            id: productId,
+            product: { description },
+          },
         });
         const updatedProduct = products.value.find(p => p.id === data.updateProduct.id);
         if (updatedProduct) {
