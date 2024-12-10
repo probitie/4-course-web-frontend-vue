@@ -14,46 +14,70 @@
 </template>
 
 <script>
-import ProductItem from './ProductItem.vue';
-import { useQuery, useMutation } from '@apollo/client';
+import { ref, onMounted } from 'vue';
+import client from '../apollo.js';
 import { GET_PRODUCTS, DELETE_PRODUCT, UPDATE_DESCRIPTION } from '../graphql/operations.js';
+import ProductItem from './ProductItem.vue';
 
 export default {
   components: { ProductItem },
   setup() {
-    // Query for fetching products
-    const { loading, data, refetch } = useQuery(GET_PRODUCTS);
+    const products = ref([]);
+    const loading = ref(true);
 
-    // Mutations for deleting and updating
-    const [deleteProduct] = useMutation(DELETE_PRODUCT);
-    const [updateDescription] = useMutation(UPDATE_DESCRIPTION);
+    const fetchProducts = async () => {
+      try {
+        const { data } = await client.query({ query: GET_PRODUCTS });
+        products.value = data.products;
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        loading.value = false;
+      }
+    };
 
-    // Handle delete mutation
     const handleBuy = async (productId) => {
       try {
-        await deleteProduct({ variables: { id: productId } });
-        await refetch(); // Refresh the list
+        await client.mutate({
+          mutation: DELETE_PRODUCT,
+          variables: { id: productId },
+        });
+        products.value = products.value.filter(p => p.id !== productId);
       } catch (error) {
         console.error('Error deleting product:', error);
       }
     };
 
-    // Handle updateDescription mutation
     const handleUpdateDescription = async ({ productId, description }) => {
       try {
-        await updateDescription({ variables: { id: productId, description } });
+        const { data } = await client.mutate({
+          mutation: UPDATE_DESCRIPTION,
+          variables: { id: productId, description },
+        });
+        const updatedProduct = products.value.find(p => p.id === data.updateProduct.id);
+        if (updatedProduct) {
+          updatedProduct.description = data.updateProduct.description;
+        }
       } catch (error) {
         console.error('Error updating description:', error);
       }
     };
 
+    onMounted(fetchProducts);
+
     return {
+      products,
       loading,
-      products: data?.products || [],
       handleBuy,
       handleUpdateDescription,
     };
   },
 };
 </script>
+
+<style scoped>
+.product-list {
+  padding: 16px;
+}
+</style>
 

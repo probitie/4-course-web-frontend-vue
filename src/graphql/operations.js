@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client/core';
 
-export const GET_ALL_PRODUCTS = gql`
-  query GetAllProducts {
-    getAllProducts {
+export const GET_PRODUCTS = gql`
+  query GetProducts {
+    products {
       id
       title
       description
@@ -14,16 +14,16 @@ export const GET_ALL_PRODUCTS = gql`
 `;
 
 export const DELETE_PRODUCT = gql`
-  mutation DeleteProduct($id: Long!) {
+  mutation DeleteProduct($id: ID!) {
     deleteProduct(id: $id)
   }
 `;
 
-export const UPDATE_PRODUCT = gql`
-  mutation UpdateProduct($id: Long!, $review: Int!) {
-    updateProduct(id: $id, product: { review: $review }) {
+export const UPDATE_DESCRIPTION = gql`
+  mutation UpdateDescription($id: ID!, $description: String!) {
+    updateProduct(id: $id, description: $description) {
       id
-      review
+      description
     }
   }
 `;
