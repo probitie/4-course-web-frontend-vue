@@ -1,55 +1,58 @@
 <template>
   <div>
-    <div v-if="loading">Loading products...</div>
-    <div v-else-if="error">Error loading products: {{ error.message }}</div>
+    <div v-if="loading">Loading products (GraphQL)...</div>
     <div v-else>
       <ProductItem
-        v-for="product in data.getAllProducts"
+        v-for="product in products"
         :key="product.id"
         :product="product"
         @buy="handleBuy"
-        @update-review="handleUpdateReview"
+        @update-description="handleUpdateDescription"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { useQuery, useMutation } from '@vue/apollo-composable';
-import { GET_ALL_PRODUCTS, DELETE_PRODUCT, UPDATE_PRODUCT } from '../graphql/operations';
-import ProductItem from './GraphqlProductItem.vue';
+import ProductItem from './ProductItem.vue';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_PRODUCTS, DELETE_PRODUCT, UPDATE_DESCRIPTION } from '../graphql/operations.js';
 
 export default {
   components: { ProductItem },
   setup() {
-    // Query for fetching all products
-    const { result: data, loading, error, refetch } = useQuery(GET_ALL_PRODUCTS);
+    // Query for fetching products
+    const { loading, data, refetch } = useQuery(GET_PRODUCTS);
 
-    // Mutations for deleting and updating products
-    const { mutate: deleteProduct } = useMutation(DELETE_PRODUCT);
-    const { mutate: updateProduct } = useMutation(UPDATE_PRODUCT);
+    // Mutations for deleting and updating
+    const [deleteProduct] = useMutation(DELETE_PRODUCT);
+    const [updateDescription] = useMutation(UPDATE_DESCRIPTION);
 
-    // Handle product deletion
-    const handleBuy = async (id) => {
+    // Handle delete mutation
+    const handleBuy = async (productId) => {
       try {
-        await deleteProduct({ id });
-        await refetch();
-      } catch (err) {
-        console.error('Error deleting product:', err);
+        await deleteProduct({ variables: { id: productId } });
+        await refetch(); // Refresh the list
+      } catch (error) {
+        console.error('Error deleting product:', error);
       }
     };
 
-    // Handle review update
-    const handleUpdateReview = async ({ productId, review }) => {
+    // Handle updateDescription mutation
+    const handleUpdateDescription = async ({ productId, description }) => {
       try {
-        await updateProduct({ id: productId, product: { review } });
-        await refetch();
-      } catch (err) {
-        console.error('Error updating review:', err);
+        await updateDescription({ variables: { id: productId, description } });
+      } catch (error) {
+        console.error('Error updating description:', error);
       }
     };
 
-    return { data, loading, error, handleBuy, handleUpdateReview };
+    return {
+      loading,
+      products: data?.products || [],
+      handleBuy,
+      handleUpdateDescription,
+    };
   },
 };
 </script>

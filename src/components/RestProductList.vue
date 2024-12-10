@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import ProductItem from './RestProductItem.vue';
+import ProductItem from './ProductItem.vue';
 
 export default {
   components: { ProductItem },

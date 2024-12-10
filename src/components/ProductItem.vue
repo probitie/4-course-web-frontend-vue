@@ -1,18 +1,15 @@
 <template>
   <div class="product-item">
     <h2>{{ product.title }}</h2>
-    <p>{{ product.description }}</p>
-    <p>Price: {{ product.price }}</p>
     <p>Category: {{ product.category }}</p>
-    <p>Added On: {{ new Date(product.addedOn).toLocaleDateString() }}</p>
+    <p>Price: ${{ product.price }}</p>
+    <p>Added On: {{ formattedDate }}</p>
     <p>
-      Review: 
+      Description:
       <input 
-        type="number" 
-        min="1" 
-        max="10" 
-        v-model.number="localReview"
-        @change="updateReview"
+        type="text"
+        v-model="localDescription"
+        @blur="updateDescription"
       />
     </p>
     <button @click="buyProduct">Buy</button>
@@ -24,18 +21,25 @@ export default {
   props: ['product'],
   data() {
     return {
-      localReview: this.product.review || 5,
+      localDescription: this.product.description,
     };
+  },
+  computed: {
+    formattedDate() {
+      return new Date(this.product.addedOn).toLocaleDateString();
+    },
   },
   methods: {
     buyProduct() {
       this.$emit('buy', this.product.id);
     },
-    updateReview() {
-      this.$emit('update-review', {
-        productId: this.product.id,
-        review: this.localReview,
-      });
+    updateDescription() {
+      if (this.localDescription !== this.product.description) {
+        this.$emit('update-description', {
+          productId: this.product.id,
+          description: this.localDescription,
+        });
+      }
     },
   },
 };
