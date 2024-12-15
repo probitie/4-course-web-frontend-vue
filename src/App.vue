@@ -1,6 +1,8 @@
 <template>
   <div id="app" class="todo-app">
     <h1>TODO App</h1>
+
+    <!-- Task Input Section -->
     <div class="todo-input">
       <input
         v-model="newTask"
@@ -9,14 +11,33 @@
       />
       <button @click="addTask">Add</button>
     </div>
+
+    <!-- Filter Buttons -->
+    <div class="todo-filters">
+      <button :class="{ active: filter === 'all' }" @click="filter = 'all'">All</button>
+      <button :class="{ active: filter === 'active' }" @click="filter = 'active'">Active</button>
+      <button :class="{ active: filter === 'completed' }" @click="filter = 'completed'">Completed</button>
+    </div>
+
+    <!-- Task List -->
     <ul class="todo-list">
-      <li v-for="task in tasks" :key="task.id">
+      <li
+        v-for="task in filteredTasks"
+        :key="task.id"
+      >
         <span :class="{ completed: task.completed }" @click="toggleTask(task)">
           {{ task.title }}
         </span>
         <button @click="deleteTask(task.id)">Delete</button>
       </li>
     </ul>
+
+    <!-- Clear Completed Button -->
+    <div class="clear-completed">
+      <button @click="deleteCompletedTasks" :disabled="!hasCompletedTasks">
+        Delete All Completed
+      </button>
+    </div>
   </div>
 </template>
 
@@ -27,27 +48,51 @@ export default {
     return {
       tasks: [], // Holds tasks fetched from API
       newTask: "", // For adding a new task
+      filter: "all", // Current filter: all, active, completed
+      idCounter: 1, // Temporary ID counter
     };
+  },
+  computed: {
+    filteredTasks() {
+      if (this.filter === "active") {
+        return this.tasks.filter((task) => !task.completed);
+      } else if (this.filter === "completed") {
+        return this.tasks.filter((task) => task.completed);
+      }
+      return this.tasks; // Default to all tasks
+    },
+    hasCompletedTasks() {
+      return this.tasks.some((task) => task.completed);
+    },
   },
   methods: {
     async fetchTasks() {
       try {
-        const response = await fetch("http://localhost:8080/api/v1/tasks"); // Replace with your API endpoint
+        const response = await fetch("/api/v1/tasks"); // Replace with your API endpoint
         this.tasks = await response.json();
+        // Set idCounter to max existing ID + 1
+        this.idCounter = this.tasks.length
+          ? Math.max(...this.tasks.map((task) => task.id)) + 1
+          : 1;
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
     },
     async addTask() {
       if (!this.newTask.trim()) return;
+      const newTask = {
+        id: this.idCounter++, // Increment the counter
+        title: this.newTask,
+        completed: false,
+      };
       try {
-        const response = await fetch("http://localhost:8080/api/v1/tasks", {
+        const response = await fetch("/api/v1/tasks", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: this.newTask, completed: false }),
+          body: JSON.stringify(newTask),
         });
-        const task = await response.json();
-        this.tasks.push(task);
+        const addedTask = await response.json();
+        this.tasks.push(addedTask);
         this.newTask = ""; // Clear input field
       } catch (error) {
         console.error("Error adding task:", error);
@@ -56,7 +101,7 @@ export default {
     async toggleTask(task) {
       try {
         const updatedTask = { ...task, completed: !task.completed };
-        await fetch(`http://localhost:8080/api/v1/tasks/${task.id}`, {
+        await fetch(`/api/v1/tasks/${task.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updatedTask),
@@ -68,10 +113,21 @@ export default {
     },
     async deleteTask(id) {
       try {
-        await fetch(`http://localhost:8080/api/v1/tasks/${id}`, { method: "DELETE" });
+        await fetch(`/api/v1/tasks/${id}`, { method: "DELETE" });
         this.tasks = this.tasks.filter((task) => task.id !== id);
       } catch (error) {
         console.error("Error deleting task:", error);
+      }
+    },
+    async deleteCompletedTasks() {
+      const completedTasks = this.tasks.filter((task) => task.completed);
+      try {
+        for (const task of completedTasks) {
+          await fetch(`/api/v1/tasks/${task.id}`, { method: "DELETE" });
+        }
+        this.tasks = this.tasks.filter((task) => !task.completed);
+      } catch (error) {
+        console.error("Error deleting completed tasks:", error);
       }
     },
   },
@@ -80,6 +136,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .todo-app {
@@ -99,6 +156,18 @@ export default {
 .todo-input button {
   padding: 10px 15px;
   font-size: 16px;
+}
+.todo-filters {
+  margin-bottom: 20px;
+}
+.todo-filters button {
+  margin: 0 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+}
+.todo-filters button.active {
+  background-color: #007bff;
+  color: white;
 }
 .todo-list {
   list-style: none;
@@ -124,6 +193,21 @@ export default {
   border: none;
   padding: 5px 10px;
   cursor: pointer;
+}
+.clear-completed {
+  margin-top: 20px;
+}
+.clear-completed button {
+  background: red;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+.clear-completed button:disabled {
+  background: gray;
+  cursor: not-allowed;
 }
 </style>
 
