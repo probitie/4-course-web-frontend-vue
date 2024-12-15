@@ -9,6 +9,11 @@
         placeholder="Add a new task"
         @keyup.enter="addTask"
       />
+      <input
+        type="datetime-local"
+        v-model="newDeadline"
+        placeholder="Set deadline"
+      />
       <button @click="addTask">Add</button>
     </div>
 
@@ -21,13 +26,15 @@
 
     <!-- Task List -->
     <ul class="todo-list">
-      <li
-        v-for="task in filteredTasks"
-        :key="task.id"
-      >
-        <span :class="{ completed: task.completed }" @click="toggleTask(task)">
-          {{ task.title }}
-        </span>
+      <li v-for="task in filteredTasks" :key="task.id">
+        <div>
+          <span :class="{ completed: task.completed }" @click="toggleTask(task)">
+            {{ task.title }}
+          </span>
+          <div v-if="task.deadline" class="deadline">
+            <small>Deadline: {{ formatDeadline(task.deadline) }}</small>
+          </div>
+        </div>
         <button @click="deleteTask(task.id)">Delete</button>
       </li>
     </ul>
@@ -48,6 +55,7 @@ export default {
     return {
       tasks: [], // Holds tasks fetched from API
       newTask: "", // For adding a new task
+      newDeadline: "", // For setting a deadline
       filter: "all", // Current filter: all, active, completed
       idCounter: 1, // Temporary ID counter
     };
@@ -66,6 +74,10 @@ export default {
     },
   },
   methods: {
+    formatDeadline(deadline) {
+      const date = new Date(deadline);
+      return date.toLocaleString(); // Format as local date and time
+    },
     async fetchTasks() {
       try {
         const response = await fetch("/api/v1/tasks"); // Replace with your API endpoint
@@ -81,9 +93,9 @@ export default {
     async addTask() {
       if (!this.newTask.trim()) return;
       const newTask = {
-        id: this.idCounter++, // Increment the counter
         title: this.newTask,
         completed: false,
+        deadline: this.newDeadline || null, // Add the deadline, or null if not provided
       };
       try {
         const response = await fetch("/api/v1/tasks", {
@@ -94,6 +106,7 @@ export default {
         const addedTask = await response.json();
         this.tasks.push(addedTask);
         this.newTask = ""; // Clear input field
+        this.newDeadline = ""; // Clear deadline input field
       } catch (error) {
         console.error("Error adding task:", error);
       }
@@ -136,7 +149,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 .todo-app {
@@ -193,6 +205,11 @@ export default {
   border: none;
   padding: 5px 10px;
   cursor: pointer;
+}
+.deadline {
+  font-size: 0.8rem;
+  color: gray;
+  margin-top: 5px;
 }
 .clear-completed {
   margin-top: 20px;
