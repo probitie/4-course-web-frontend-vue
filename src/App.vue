@@ -9,11 +9,11 @@
         placeholder="Add a new task"
         @keyup.enter="addTask"
       />
-      <input
-        type="datetime-local"
+      <VueDatePicker
         v-model="newDeadline"
         placeholder="Set deadline"
-        @keyup.enter="addTask"
+        :enable-time="true"
+        format="yyyy-MM-dd HH:mm"
       />
     </div>
 
@@ -47,13 +47,19 @@
 </template>
 
 <script>
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+
 export default {
   name: "TodoApp",
+  components: {
+    VueDatePicker,
+  },
   data() {
     return {
       tasks: [],
       newTask: "",
-      newDeadline: "",
+      newDeadline: null, // Updated to align with VueDatePicker format
       filter: "all",
     };
   },
@@ -95,7 +101,7 @@ export default {
         const addedTask = await response.json();
         this.tasks.push(addedTask);
         this.newTask = "";
-        this.newDeadline = "";
+        this.newDeadline = null;
       } catch (err) {
         console.error("Error adding task:", err);
       }
@@ -146,11 +152,16 @@ export default {
   font-family: Arial, sans-serif;
   text-align: center;
 }
+
 .todo-input input {
   margin: 10px 5px;
   padding: 10px;
   font-size: 16px;
+  width: 100%; /* Makes the task input field full width */
+  max-width: 600px; /* Adjust this value to make it visually bigger */
+  box-sizing: border-box;
 }
+
 .todo-filters button {
   margin: 5px;
   padding: 10px;
