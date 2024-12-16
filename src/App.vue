@@ -43,6 +43,18 @@
         Delete All Completed
       </button>
     </div>
+
+    <!-- Notification Section -->
+    <div class="notifications">
+      <div
+        class="notification"
+        v-for="(notification, index) in notifications"
+        :key="index"
+      >
+        <p>{{ notification }}</p>
+        <button class="close-btn" @click="removeNotification(index)">X</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -59,8 +71,10 @@ export default {
     return {
       tasks: [],
       newTask: "",
-      newDeadline: null, // Updated to align with VueDatePicker format
+      newDeadline: null,
       filter: "all",
+      notifications: [], // For storing notifications
+      socket: null, // WebSocket connection
     };
   },
   computed: {
@@ -138,9 +152,26 @@ export default {
         console.error("Error deleting completed tasks:", err);
       }
     },
+    removeNotification(index) {
+      this.notifications.splice(index, 1);
+    },
   },
   mounted() {
     this.fetchTasks();
+
+    // WebSocket connection
+    this.socket = new WebSocket("ws://localhost:8080/chat");
+    this.socket.onmessage = (event) => {
+      this.notifications.push(event.data); // Push new message to notifications
+    };
+    this.socket.onclose = () => {
+      console.warn("WebSocket connection closed.");
+    };
+  },
+  beforeUnmount() {
+    if (this.socket) {
+      this.socket.close(); // Ensure WebSocket connection is closed
+    }
   },
 };
 </script>
@@ -157,8 +188,8 @@ export default {
   margin: 10px 5px;
   padding: 10px;
   font-size: 16px;
-  width: 100%; /* Makes the task input field full width */
-  max-width: 600px; /* Adjust this value to make it visually bigger */
+  width: 100%;
+  max-width: 600px;
   box-sizing: border-box;
 }
 
@@ -213,6 +244,36 @@ export default {
   margin-top: 5px;
   font-size: 0.8rem;
   color: gray;
+}
+
+/* Notifications styling */
+.notifications {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notification {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
 }
 </style>
 
