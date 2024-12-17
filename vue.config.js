@@ -3,10 +3,20 @@ module.exports = defineConfig({
 	transpileDependencies: true,
 	devServer: {
 	    proxy: {
-	      '/api': {
+              '/api': {
 		target: 'http://localhost:8080', // Backend server
 		changeOrigin: true,
 	      },
+              '/graphql': {
+		target: 'http://localhost:8080', // Backend server
+		changeOrigin: true,
+	      },
+              '/grpc': {
+		target: 'http://localhost:9090', // Backend server
+		changeOrigin: true,
+	      },
+
+
 	    },
 	  },
 })
