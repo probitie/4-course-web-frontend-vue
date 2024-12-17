@@ -62,6 +62,18 @@
         Delete All Completed
       </button>
     </div>
+    <!-- Notification Section -->
+    <div class="notifications">
+      <div
+        class="notification"
+        v-for="(notification, index) in notifications"
+        :key="index"
+      >
+        <p>{{ notification }}</p>
+        <button class="close-btn" @click="removeNotification(index)">X</button>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -83,6 +95,8 @@ export default {
       filter: "all",
       selectedApi: "REST",
       apiService: restApi, // Default to REST
+      notifications: [], // For storing notifications
+      socket: null, // WebSocket connection
     };
   },
   computed: {
@@ -148,6 +162,9 @@ export default {
         console.error("Error deleting completed tasks:", err);
       }
     },
+    removeNotification(index) {
+      this.notifications.splice(index, 1);
+    },
     changeApi() {
       // Dynamically set the API service
       if (this.selectedApi === "REST") {
@@ -162,6 +179,20 @@ export default {
   },
   mounted() {
     this.fetchTasks();
+
+    // WebSocket connection
+    this.socket = new WebSocket("ws://localhost:8080/chat");
+    this.socket.onmessage = (event) => {
+      this.notifications.push(event.data); // Push new message to notifications
+    };
+    this.socket.onclose = () => {
+      console.warn("WebSocket connection closed.");
+    };
+  },
+  beforeUnmount() {
+    if (this.socket) {
+      this.socket.close(); // Ensure WebSocket connection is closed
+    }
   },
 };
 </script>
@@ -255,5 +286,36 @@ export default {
   font-size: 0.8rem;
   color: gray;
 }
+
+/* Notifications styling */
+.notifications {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notification {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 </style>
 
