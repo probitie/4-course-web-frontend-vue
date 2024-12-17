@@ -2,6 +2,16 @@
   <div id="app" class="todo-app">
     <h1>TODO App</h1>
 
+    <!-- API Selection -->
+    <div class="api-selection">
+      <label for="api-select">Select API:</label>
+      <select id="api-select" v-model="selectedApi" @change="changeApi">
+        <option value="REST">REST</option>
+        <option value="GraphQL">GraphQL</option>
+        <option value="gRPC">gRPC</option>
+      </select>
+    </div>
+
     <!-- Task Input Section -->
     <div class="todo-input">
       <input
@@ -19,9 +29,18 @@
 
     <!-- Filter Buttons -->
     <div class="todo-filters">
-      <button :class="{ active: filter === 'all' }" @click="filter = 'all'">All</button>
-      <button :class="{ active: filter === 'active' }" @click="filter = 'active'">Active</button>
-      <button :class="{ active: filter === 'completed' }" @click="filter = 'completed'">Completed</button>
+      <button :class="{ active: filter === 'all' }" @click="filter = 'all'">
+        All
+      </button>
+      <button :class="{ active: filter === 'active' }" @click="filter = 'active'">
+        Active
+      </button>
+      <button
+        :class="{ active: filter === 'completed' }"
+        @click="filter = 'completed'"
+      >
+        Completed
+      </button>
     </div>
 
     <!-- Task List -->
@@ -43,18 +62,6 @@
         Delete All Completed
       </button>
     </div>
-
-    <!-- Notification Section -->
-    <div class="notifications">
-      <div
-        class="notification"
-        v-for="(notification, index) in notifications"
-        :key="index"
-      >
-        <p>{{ notification }}</p>
-        <button class="close-btn" @click="removeNotification(index)">X</button>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -62,19 +69,20 @@
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 
+// Import API Services
+import * as restApi from "./services/restApi";
+
 export default {
   name: "TodoApp",
-  components: {
-    VueDatePicker,
-  },
+  components: { VueDatePicker },
   data() {
     return {
       tasks: [],
       newTask: "",
       newDeadline: null,
       filter: "all",
-      notifications: [], // For storing notifications
-      socket: null, // WebSocket connection
+      selectedApi: "REST",
+      apiService: restApi, // Default to REST
     };
   },
   computed: {
@@ -93,8 +101,7 @@ export default {
     },
     async fetchTasks() {
       try {
-        const response = await fetch("/api/v1/tasks");
-        this.tasks = await response.json();
+        this.tasks = await this.apiService.fetchTasks();
       } catch (err) {
         console.error("Error fetching tasks:", err);
       }
@@ -107,12 +114,7 @@ export default {
         deadline: this.newDeadline || null,
       };
       try {
-        const response = await fetch("/api/v1/tasks", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newTask),
-        });
-        const addedTask = await response.json();
+        const addedTask = await this.apiService.addTask(newTask);
         this.tasks.push(addedTask);
         this.newTask = "";
         this.newDeadline = null;
@@ -123,11 +125,7 @@ export default {
     async toggleTask(task) {
       try {
         const updatedTask = { completed: !task.completed };
-        await fetch(`/api/v1/tasks/${task.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updatedTask),
-        });
+        await this.apiService.updateTask(task.id, updatedTask);
         task.completed = !task.completed;
       } catch (err) {
         console.error("Error toggling task:", err);
@@ -135,7 +133,7 @@ export default {
     },
     async deleteTask(id) {
       try {
-        await fetch(`/api/v1/tasks/${id}`, { method: "DELETE" });
+        await this.apiService.deleteTask(id);
         this.tasks = this.tasks.filter((t) => t.id !== id);
       } catch (err) {
         console.error("Error deleting task:", err);
@@ -144,39 +142,42 @@ export default {
     async deleteCompletedTasks() {
       const completedTasks = this.tasks.filter((t) => t.completed);
       try {
-        for (const task of completedTasks) {
-          await fetch(`/api/v1/tasks/${task.id}`, { method: "DELETE" });
-        }
+        await this.apiService.deleteCompletedTasks(completedTasks);
         this.tasks = this.tasks.filter((t) => !t.completed);
       } catch (err) {
         console.error("Error deleting completed tasks:", err);
       }
     },
-    removeNotification(index) {
-      this.notifications.splice(index, 1);
+    changeApi() {
+      // Dynamically set the API service
+      if (this.selectedApi === "REST") {
+        this.apiService = require("./services/restApi");
+      } else if (this.selectedApi === "GraphQL") {
+        this.apiService = require("./services/graphqlApi");
+      } else if (this.selectedApi === "gRPC") {
+        this.apiService = require("./services/grpcApi");
+      }
+      this.fetchTasks(); // Re-fetch tasks with the new API
     },
   },
   mounted() {
     this.fetchTasks();
-
-    // WebSocket connection
-    this.socket = new WebSocket("ws://localhost:8080/chat");
-    this.socket.onmessage = (event) => {
-      this.notifications.push(event.data); // Push new message to notifications
-    };
-    this.socket.onclose = () => {
-      console.warn("WebSocket connection closed.");
-    };
-  },
-  beforeUnmount() {
-    if (this.socket) {
-      this.socket.close(); // Ensure WebSocket connection is closed
-    }
   },
 };
 </script>
 
 <style scoped>
+/* Add styling for API select dropdown */
+.api-selection {
+  margin: 10px 0;
+}
+
+.api-selection select {
+  padding: 5px 10px;
+  font-size: 16px;
+}
+
+/* Existing styles */
 .todo-app {
   max-width: 600px;
   margin: 50px auto;
@@ -198,14 +199,17 @@ export default {
   padding: 10px;
   font-size: 16px;
 }
+
 .todo-filters button.active {
   background-color: #007bff;
   color: white;
 }
+
 .todo-list {
   list-style: none;
   padding: 0;
 }
+
 .todo-list li {
   display: flex;
   justify-content: center;
@@ -214,14 +218,17 @@ export default {
   border-bottom: 1px solid #ddd;
   padding: 10px;
 }
+
 .task-details {
   text-align: center;
   flex: 1;
 }
+
 .completed {
   text-decoration: line-through;
   color: gray;
 }
+
 .delete-btn {
   background-color: red;
   color: white;
@@ -229,6 +236,7 @@ export default {
   padding: 5px 10px;
   cursor: pointer;
 }
+
 .clear-completed button {
   background-color: gray;
   color: white;
@@ -236,44 +244,16 @@ export default {
   border: none;
   cursor: pointer;
 }
+
 .clear-completed button:disabled {
   background-color: lightgray;
   cursor: not-allowed;
 }
+
 .deadline {
   margin-top: 5px;
   font-size: 0.8rem;
   color: gray;
-}
-
-/* Notifications styling */
-.notifications {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.notification {
-  background-color: #007bff;
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  position: relative;
-}
-
-.close-btn {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: none;
-  border: none;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
 }
 </style>
 
