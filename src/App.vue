@@ -183,7 +183,9 @@ export default {
     // WebSocket connection
     this.socket = new WebSocket("ws://localhost:8080/chat");
     this.socket.onmessage = (event) => {
-      this.notifications.push(event.data); // Push new message to notifications
+      if (this.notifications === undefined || this.notifications.length == 0) {
+          this.notifications.push(event.data); // Push new message to notifications
+      }
     };
     this.socket.onclose = () => {
       console.warn("WebSocket connection closed.");
