@@ -8,7 +8,7 @@ import {
 } from "../generated/TaskService_pb";
 
 // Create a gRPC client instance
-const client = new TaskServiceClient("http://localhost:8080", null, null);
+const client = new TaskServiceClient("http://localhost:8088", null, null);
 
 /**
  * Fetch all tasks using the gRPC GetAllTasks method.
