@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package net.devh.boot.grpc.example;
+
+option java_multiple_files = true;
+option java_package = "com.project.ecommerce.service";
+option java_outer_classname = "TaskServiceV3";
+
+message Task {
+  int64 id = 1;
+  string title = 2;
+  bool completed = 3;
+  string deadline = 4;
+}
+
+message GetTaskRequest {
+  int64 id = 1;
+}
+
+message TaskResponse {
+  Task task = 1;
+}
+
+message AddTaskRequest {
+  Task task = 1;
+}
+
+message UpdateTaskRequest {
+  int64 id = 1;
+  Task task = 2;
+}
+message GetAllTasksRequest {
+
+}
+message GetAllTasksResponse {
+  repeated Task tasks = 1;
+}
+
+message DeleteTaskRequest {
+  int64 id = 1;
+}
+
+message BooleanResponse{
+  bool resp = 1;
+}
+
+service TaskService {
+  rpc GetTask (GetTaskRequest) returns (TaskResponse);
+  rpc AddTask (AddTaskRequest) returns (TaskResponse);
+  rpc UpdateTask (UpdateTaskRequest) returns (TaskResponse);
+  rpc DeleteTask (DeleteTaskRequest) returns (BooleanResponse);
+  rpc GetAllTasks (GetAllTasksRequest) returns (GetAllTasksResponse);
+}
+
