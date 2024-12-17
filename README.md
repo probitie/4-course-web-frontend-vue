@@ -1,29 +1,28 @@
-# smartphone-store
+# START UP
 
+## compile and run backend
+```
+install intellij-idea Community Edition or any free IDE for java
+compile and run the backend before frontend
+```
 
-## Project setup
+## Frontend setup
 ```
 install node-js and npm
 npm install
 ```
 
-### Compiles and hot-reloads for development
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+run gRPC proxy from project root
 ```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
+envoy -c envoy.yaml
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+
+# DEVELOPMENT
 
 ## Setup gRPC
 
