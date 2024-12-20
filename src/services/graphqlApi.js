@@ -72,12 +72,19 @@ export async function addTask(newTask) {
     }
   `;
 
-  // Format the deadline to "2024-12-17T14:18:00.000+00:00"
-  const formatDeadline = (deadline) => {
-    if (!deadline) return null;
-    return deadline.toISOString().replace("Z", "+00:00");
-  };
+// Format the deadline to "Tue Dec 17 14:30:00 UTC 2024"
+const formatDeadline = (deadline) => {
+  if (!deadline) return null;
 
+  const date = new Date(deadline);
+
+  // Extract date parts
+  const options = { weekday: "short", month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit", timeZone: "UTC" };
+  const formatted = new Intl.DateTimeFormat("en-US", options).format(date);
+
+  // Add "UTC" manually since Intl.DateTimeFormat doesn't include it in output
+  return formatted.replace(/,\s+/g, " ") + " UTC";
+};
   const variables = {
     task: {
       title: newTask.title,
