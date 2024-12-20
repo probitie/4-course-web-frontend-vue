@@ -2,10 +2,13 @@ const API_BASE_URL = "/api/v1/tasks";
 
 export async function fetchTasks() {
   const response = await fetch(API_BASE_URL);
-  return await response.json();
+const resp = await response.json();
+console.log("rest fetch tasks ",  resp);
+  return resp;
 }
 
 export async function addTask(newTask) {
+console.log("XXXX rest add task ", newTask);
   const response = await fetch(API_BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

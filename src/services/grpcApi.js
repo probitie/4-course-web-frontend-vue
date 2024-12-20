@@ -29,6 +29,7 @@ export async function fetchTasks() {
         completed: task.getCompleted(),
         deadline: task.getDeadline(),
       }));
+      console.log("XXXX fetch tasks: ", tasks);
       resolve(tasks);
     });
   });
@@ -41,6 +42,7 @@ export async function fetchTasks() {
  */
 export async function addTask(newTask) {
   return new Promise((resolve, reject) => {
+console.log("XXXX add task ", newTask);
     const task = new Task();
     task.setTitle(newTask.title);
     task.setCompleted(newTask.completed);
@@ -55,6 +57,7 @@ export async function addTask(newTask) {
         return reject(err);
       }
       const addedTask = response.getTask();
+console.log("XXXX addtask got tsk from server: id: ", addedTask.getId(), "title: ", addedTask.getTitle());
       resolve({
         id: addedTask.getId(),
         title: addedTask.getTitle(),
@@ -73,6 +76,8 @@ export async function addTask(newTask) {
  */
 export async function updateTask(id, updatedTask) {
   return new Promise((resolve, reject) => {
+    console.log("XXXX update task ", updatedTask);
+    console.log("XXXX update task id is ", id);
     const task = new Task();
     task.setTitle(updatedTask.title);
     task.setCompleted(updatedTask.completed);
